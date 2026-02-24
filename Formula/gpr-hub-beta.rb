@@ -24,13 +24,13 @@ class GprHubBeta < Formula
     # Set environment variables for compilation of native extensions like cryptography
     # This ensures they link against Homebrew's openssl and libffi
     ENV.prepend_path "PATH", libexec/"bin"
-    ENV["LDFLAGS"] = "-L#{Formula["openssl@3"].opt_lib} -L#{Formula["libffi"].opt_lib}"
-    ENV["CFLAGS"] = "-I#{Formula["openssl@3"].opt_include} -I#{Formula["libffi"].opt_include}"
+    ENV["CRYPTOGRAPHY_LDFLAGS"] = "-L#{Formula["openssl@3"].opt_lib} -L#{Formula["libffi"].opt_lib}"
+    ENV["CRYPTOGRAPHY_CFLAGS"] = "-I#{Formula["openssl@3"].opt_include} -I#{Formula["libffi"].opt_include}"
     # Add a flag known to help with cryptography linkage issues
     ENV["CRYPTOGRAPHY_SUPPRESS_LINK_FLAGS"] = "1"
 
-    # 3. Explicitly install cryptography forcing source build with headerpad_flag
-    system libexec/"bin/python", "-m", "pip", "install", "-v", "--ignore-installed", "--no-binary", "cryptography", "cryptography", *std_pip_args, *headerpad_flag
+    # 3. Explicitly install cryptography forcing source build
+    system libexec/"bin/python", "-m", "pip", "install", "-v", "--ignore-installed", "--no-binary", "cryptography", "cryptography"
 
     # 4. Use the venv's python to run pip and install your package
     system libexec/"bin/python", "-m", "pip", "install", "-v", "--ignore-installed", buildpath
