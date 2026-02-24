@@ -29,8 +29,8 @@ class GprHubBeta < Formula
     ENV["CFLAGS"] = "-I#{Formula["openssl@3"].opt_include} -I#{Formula["libffi"].opt_include}"
 
     # 3. Use the venv's python to run pip and install your package
-    # Using libexec paths directly
-    system libexec/"bin/python", "-m", "pip", "install", "-v", "--ignore-installed", buildpath
+    # Using libexec paths directly, and forcing source build for all packages to resolve dylib linkage issues
+    system libexec/"bin/python", "-m", "pip", "install", "-v", "--ignore-installed", "--no-binary :all:", buildpath
 
     # 4. Link the executable with a unique name for the beta version
     bin.install_symlink libexec/"bin/gpr-hub", "gpr-hub-beta"
