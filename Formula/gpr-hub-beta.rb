@@ -6,7 +6,7 @@ class GprHubBeta < Formula
   # This URL points to a specific tag based on the local setup.py version (4.0.0)
   # and corresponds to the content of the beta branch.
   url "https://github.com/Codemaster-AR/GPR-Hub-CLI-Beta/archive/refs/tags/v6.0.0-beta.tar.gz"
-  sha256 "8cdb37a01fe0c7df4e47846690a66ea0051b4694463604d09a48882404b54010"
+  sha256 "9db928f554471c3c00fdabd0d84c571121d027863f5659939a75670579d93344"
   license "MIT"
 
   # Updated dependencies based on analysis of main.py and user feedback
