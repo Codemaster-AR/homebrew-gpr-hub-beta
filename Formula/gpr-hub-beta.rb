@@ -18,12 +18,12 @@ class GprHubBeta < Formula
     # 1. Create the virtualenv
     venv = virtualenv_create(libexec, "python3.12")
 
-    # 2. Update pip and setuptools in the venv
-    venv.update_pip!
+    # 2. Manually install pip inside the venv just in case it's missing
+    # Reverting to explicit ensurepip --upgrade as venv.update_pip! is not found
+    system "#{venv.path}/bin/python", "-m", "ensurepip", "--upgrade"
 
     # Set environment variables for compilation of native extensions like cryptography
     # This ensures they link against Homebrew's openssl and libffi
-    # Removed ENV.prepend_path "PATH", "#{venv.path}/bin" as venv.update_pip! and venv.pip_install should handle paths internally
     ENV["LDFLAGS"] = "-L#{Formula["openssl@3"].opt_lib} -L#{Formula["libffi"].opt_lib}"
     ENV["CFLAGS"] = "-I#{Formula["openssl@3"].opt_include} -I#{Formula["libffi"].opt_include}"
 
