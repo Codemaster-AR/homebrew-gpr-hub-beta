@@ -32,12 +32,12 @@ class GprHubBeta < Formula
     # Using libexec paths directly
     system libexec/"bin/python", "-m", "pip", "install", "-v", "--ignore-installed", buildpath
 
-    # 4. Link the executable
-    bin.install_symlink libexec/"bin/gpr-hub"
+    # 4. Link the executable with a unique name for the beta version
+    bin.install_symlink libexec/"bin/gpr-hub", "gpr-hub-beta"
   end
 
   test do
     # Assuming --version or a similar command exists for basic functionality check
-    system "#{bin}/gpr-hub", "--version"
+    system "#{bin}/gpr-hub-beta", "--version"
   end
 end
