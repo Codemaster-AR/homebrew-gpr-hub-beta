@@ -29,8 +29,8 @@ class GprHubBeta < Formula
     # Add a flag known to help with cryptography linkage issues
     ENV["CRYPTOGRAPHY_SUPPRESS_LINK_FLAGS"] = "1"
 
-    # 3. Explicitly install cryptography forcing source build
-    system libexec/"bin/python", "-m", "pip", "install", "-v", "--ignore-installed", "--no-binary", "cryptography", "cryptography"
+    # 3. Explicitly install cryptography forcing source build with headerpad_flag
+    system libexec/"bin/python", "-m", "pip", "install", "-v", "--ignore-installed", "--no-binary", "cryptography", "cryptography", *std_pip_args, *headerpad_flag
 
     # 4. Use the venv's python to run pip and install your package
     system libexec/"bin/python", "-m", "pip", "install", "-v", "--ignore-installed", buildpath
