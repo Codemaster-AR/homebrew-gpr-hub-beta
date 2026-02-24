@@ -5,8 +5,8 @@ class GprHubBeta < Formula
   homepage "https://github.com/Codemaster-AR/GPR-Hub-Python"
   # This URL points to a specific tag based on the local setup.py version (4.0.0)
   # and corresponds to the content of the beta branch.
-  url "https://github.com/Codemaster-AR/GPR-Hub-Python/archive/refs/tags/v4.0.0.tar.gz"
-  sha256 "8cdb37a01fe0c7df4e47846690a66ea0051b4694463604d09a48882404b54010"
+  url "https://github.com/Codemaster-AR/GPR-Hub-CLI-Beta/archive/refs/tags/v6.0.0-beta.tar.gz"
+  sha256 "9db928f554471c3c00fdabd0d84c571121d027863f5659939a756705779d93344"
   license "MIT"
 
   # Updated dependencies based on analysis of main.py and user feedback
@@ -19,20 +19,20 @@ class GprHubBeta < Formula
     venv = virtualenv_create(libexec, "python3.12")
 
     # 2. Manually install pip inside the venv just in case it's missing
-    system libexec/"bin/python", "-m", "ensurepip", "--upgrade"
+    system "#{venv.path}/bin/python", "-m", "ensurepip", "--upgrade"
 
     # Set environment variables for compilation of native extensions like cryptography
     # This ensures they link against Homebrew's openssl and libffi
-    ENV.prepend_path "PATH", venv/"bin"
+    ENV.prepend_path "PATH", "#{venv.path}/bin"
     ENV["LDFLAGS"] = "-L#{Formula["openssl@3"].opt_lib} -L#{Formula["libffi"].opt_lib}"
     ENV["CFLAGS"] = "-I#{Formula["openssl@3"].opt_include} -I#{Formula["libffi"].opt_include}"
 
     # 3. Use the venv's python to run pip and install your package
     # This ensures all dependencies in setup.py are handled
-    system libexec/"bin/python", "-m", "pip", "install", "-v", "--ignore-installed", buildpath
+    system "#{venv.path}/bin/python", "-m", "pip", "install", "-v", "--ignore-installed", buildpath
 
     # 4. Link the executable
-    bin.install_symlink venv/"bin/gpr-hub"
+    bin.install_symlink "#{venv.path}/bin/gpr-hub"
   end
 
   test do
