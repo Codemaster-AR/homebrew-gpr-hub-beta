@@ -5,7 +5,7 @@ class GprHubBeta < Formula
   homepage "https://github.com/Codemaster-AR/GPR-Hub-Python"
   # This URL points to a specific tag based on the local setup.py version (4.0.0)
   # and corresponds to the content of the beta branch.
-  url "https://github.com/Codemaster-AR/GPR-Hub-Python/archive/refs/tags/v4.0.0.tar.gz"
+  url "https://github.com/Codemaster-AR/GPR-Hub-CLI-Beta/archive/refs/tags/v6.0.0-beta.tar.gz"
   sha256 "8cdb37a01fe0c7df4e47846690a66ea0051b4694463604d09a48882404b54010"
   license "MIT"
 
