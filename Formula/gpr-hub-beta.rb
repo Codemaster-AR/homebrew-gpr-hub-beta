@@ -19,18 +19,18 @@ class GprHubBeta < Formula
     venv = virtualenv_create(libexec, "python3.12")
 
     # 2. Manually install pip inside the venv just in case it's missing
-    # Using libexec paths directly, avoiding methods on 'venv' that are causing NoMethodError
     system libexec/"bin/python", "-m", "ensurepip", "--upgrade"
 
     # Set environment variables for compilation of native extensions like cryptography
     # This ensures they link against Homebrew's openssl and libffi
+    # Also ensure the venv's bin is in PATH for subsequent commands
     ENV.prepend_path "PATH", libexec/"bin"
     ENV["LDFLAGS"] = "-L#{Formula["openssl@3"].opt_lib} -L#{Formula["libffi"].opt_lib}"
     ENV["CFLAGS"] = "-I#{Formula["openssl@3"].opt_include} -I#{Formula["libffi"].opt_include}"
 
     # 3. Use the venv's python to run pip and install your package
-    # Using libexec paths directly, and forcing source build for all packages to resolve dylib linkage issues
-    system libexec/"bin/python", "-m", "pip", "install", "-v", "--ignore-installed", "--no-binary :all:", buildpath
+    # Removed --no-binary :all: as it caused a pip error
+    system libexec/"bin/python", "-m", "pip", "install", "-v", "--ignore-installed", buildpath
 
     # 4. Link the executable with a unique name for the beta version
     bin.install_symlink libexec/"bin/gpr-hub", "gpr-hub-beta"
