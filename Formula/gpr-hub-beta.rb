@@ -19,19 +19,21 @@ class GprHubBeta < Formula
     venv = virtualenv_create(libexec, "python3.12")
 
     # 2. Manually install pip inside the venv just in case it's missing
-    # Reverting to explicit ensurepip --upgrade as venv.update_pip! is not found
-    system "#{venv.path}/bin/python", "-m", "ensurepip", "--upgrade"
+    # Using libexec paths directly, avoiding methods on 'venv' that are causing NoMethodError
+    system libexec/"bin/python", "-m", "ensurepip", "--upgrade"
 
     # Set environment variables for compilation of native extensions like cryptography
     # This ensures they link against Homebrew's openssl and libffi
+    ENV.prepend_path "PATH", libexec/"bin"
     ENV["LDFLAGS"] = "-L#{Formula["openssl@3"].opt_lib} -L#{Formula["libffi"].opt_lib}"
     ENV["CFLAGS"] = "-I#{Formula["openssl@3"].opt_include} -I#{Formula["libffi"].opt_include}"
 
-    # 3. Use the venv's pip to install your package
-    venv.pip_install buildpath
+    # 3. Use the venv's python to run pip and install your package
+    # Using libexec paths directly
+    system libexec/"bin/python", "-m", "pip", "install", "-v", "--ignore-installed", buildpath
 
     # 4. Link the executable
-    bin.install_symlink "#{venv.path}/bin/gpr-hub"
+    bin.install_symlink libexec/"bin/gpr-hub"
   end
 
   test do
