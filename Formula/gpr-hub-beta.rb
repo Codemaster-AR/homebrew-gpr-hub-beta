@@ -19,20 +19,20 @@ class GprHubBeta < Formula
     venv = virtualenv_create(libexec, "python3.12")
 
     # 2. Manually install pip inside the venv just in case it's missing
-    system libexec/"bin/python", "-m", "ensurepip", "--upgrade"
+    system venv.python, "-m", "ensurepip", "--upgrade"
 
     # Set environment variables for compilation of native extensions like cryptography
     # This ensures they link against Homebrew's openssl and libffi
-    ENV.prepend_path "PATH", venv/"bin"
+    ENV.prepend_path "PATH", venv.bin
     ENV["LDFLAGS"] = "-L#{Formula["openssl@3"].opt_lib} -L#{Formula["libffi"].opt_lib}"
     ENV["CFLAGS"] = "-I#{Formula["openssl@3"].opt_include} -I#{Formula["libffi"].opt_include}"
 
     # 3. Use the venv's python to run pip and install your package
     # This ensures all dependencies in setup.py are handled
-    system libexec/"bin/python", "-m", "pip", "install", "-v", "--ignore-installed", buildpath
+    system venv.python, "-m", "pip", "install", "-v", "--ignore-installed", buildpath
 
     # 4. Link the executable
-    bin.install_symlink venv/"bin/gpr-hub"
+    bin.install_symlink venv.bin/"gpr-hub"
   end
 
   test do
