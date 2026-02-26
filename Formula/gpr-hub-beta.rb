@@ -12,21 +12,23 @@ class GprHubBeta < Formula
   depends_on "openssl@3"
 
   def install
-    # This helper creates a clean virtualenv in the libexec folder
-    # and automatically updates pip/setuptools/wheel for you.
+    # Create the virtual environment
     venv = virtualenv_create(libexec, "python3.12")
 
-    # Install the package and its dependencies from the build path.
-    # By removing '--no-binary', it will use the pre-compiled version of 
-    # cryptography, avoiding the Rust compiler error.
+    # Explicitly install the dependencies that are missing from the environment
+    # By doing this here, we ensure they are available to the script.
+    venv.pip_install "requests"
+    venv.pip_install "cryptography"
+
+    # Install the actual package from the downloaded source
     venv.pip_install buildpath
 
-    # Symlink the internal 'gpr-hub' binary to 'gpr-hub-beta' in the user's PATH
+    # Create the symlink for the beta command
+    # This links the internal 'gpr-hub' binary to the public 'gpr-hub-beta' name
     bin.install_symlink libexec/"bin/gpr-hub" => "gpr-hub-beta"
   end
 
   test do
-    # Verify the installation by checking the version
     system "#{bin}/gpr-hub-beta", "--version"
   end
 end
