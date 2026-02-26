@@ -2,7 +2,7 @@ class GprHubBeta < Formula
   include Language::Python::Virtualenv
 
   desc "GPR Image Reader and AI Analyzer"
-  homepage "https://github.com/Codemaster-AR/GPR-Hub-Python"
+  homepage "https://github.com/Codemaster-AR/gpr-hub-cli-beta"
   # This URL points to a specific tag based on the local setup.py version (4.0.0)
   # and corresponds to the content of the beta branch.
   url "https://github.com/Codemaster-AR/GPR-Hub-CLI-Beta/archive/refs/tags/v6.0.0-beta.tar.gz"
