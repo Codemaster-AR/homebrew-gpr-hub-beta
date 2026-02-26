@@ -1,46 +1,32 @@
 class GprHubBeta < Formula
   include Language::Python::Virtualenv
 
-  desc "GPR Image Reader and AI Analyzer"
+  desc "GPR Image Reader and AI Analyzer (Beta)"
   homepage "https://github.com/Codemaster-AR/gpr-hub-cli-beta"
-  # This URL points to a specific tag based on the local setup.py version (4.0.0)
-  # and corresponds to the content of the beta branch.
   url "https://github.com/Codemaster-AR/GPR-Hub-CLI-Beta/archive/refs/tags/v6.0.0-beta.tar.gz"
   sha256 "9db928f554471c3c00fdabd0d84c571121d027863f5659939a75670579d93344"
   license "MIT"
 
-  # Updated dependencies based on analysis of main.py and user feedback
   depends_on "python@3.12"
-  depends_on "libffi" # For cryptography
-  depends_on "openssl@3" # For cryptography
+  depends_on "libffi"
+  depends_on "openssl@3"
 
   def install
-    # 1. Create the virtualenv
+    # This helper creates a clean virtualenv in the libexec folder
+    # and automatically updates pip/setuptools/wheel for you.
     venv = virtualenv_create(libexec, "python3.12")
 
-    # 2. Manually install pip inside the venv just in case it's missing
-    system libexec/"bin/python", "-m", "ensurepip", "--upgrade"
+    # Install the package and its dependencies from the build path.
+    # By removing '--no-binary', it will use the pre-compiled version of 
+    # cryptography, avoiding the Rust compiler error.
+    venv.pip_install buildpath
 
-    # Set environment variables for compilation of native extensions like cryptography
-    # This ensures they link against Homebrew's openssl and libffi
-    ENV.prepend_path "PATH", libexec/"bin"
-    ENV["CRYPTOGRAPHY_LDFLAGS"] = "-L#{Formula["openssl@3"].opt_lib} -L#{Formula["libffi"].opt_lib}"
-    ENV["CRYPTOGRAPHY_CFLAGS"] = "-I#{Formula["openssl@3"].opt_include} -I#{Formula["libffi"].opt_include}"
-    # Add a flag known to help with cryptography linkage issues
-    ENV["CRYPTOGRAPHY_SUPPRESS_LINK_FLAGS"] = "1"
-
-    # 3. Explicitly install cryptography forcing source build
-    system libexec/"bin/python", "-m", "pip", "install", "-v", "--ignore-installed", "--no-binary", "cryptography", "cryptography"
-
-    # 4. Use the venv's python to run pip and install your package
-    system libexec/"bin/python", "-m", "pip", "install", "-v", "--ignore-installed", buildpath
-
-    # 4. Link the executable with a unique name for the beta version
-    bin.install_symlink libexec/"bin/gpr-hub", "gpr-hub-beta"
+    # Symlink the internal 'gpr-hub' binary to 'gpr-hub-beta' in the user's PATH
+    bin.install_symlink libexec/"bin/gpr-hub" => "gpr-hub-beta"
   end
 
   test do
-    # Assuming --version or a similar command exists for basic functionality check
+    # Verify the installation by checking the version
     system "#{bin}/gpr-hub-beta", "--version"
   end
 end
