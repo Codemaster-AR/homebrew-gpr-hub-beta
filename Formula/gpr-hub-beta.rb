@@ -7,24 +7,38 @@ class GprHubBeta < Formula
   sha256 "9db928f554471c3c00fdabd0d84c571121d027863f5659939a75670579d93344"
   license "MIT"
 
+  # Core Dependencies
   depends_on "python@3.12"
   depends_on "libffi"
   depends_on "openssl@3"
+  
+  # Build-only dependencies (Needed for Linux/WSL source builds)
+  depends_on "pkg-config" => :build
 
   def install
-    # Create the virtual environment
+    # 1. Create the virtualenv using the standard helper
     venv = virtualenv_create(libexec, "python3.12")
 
-    # Explicitly install the dependencies that are missing from the environment
-    # By doing this here, we ensure they are available to the script.
+    # 2. Universal Environment Flags
+    # This tells the compiler where OpenSSL and Libffi are on ANY OS (macOS or Linux)
+    ENV.append "LDFLAGS", "-L#{Formula["openssl@3"].opt_lib}"
+    ENV.append "LDFLAGS", "-L#{Formula["libffi"].opt_lib}"
+    ENV.append "CPPFLAGS", "-I#{Formula["openssl@3"].opt_include}"
+    ENV.append "CPPFLAGS", "-I#{Formula["libffi"].opt_include}"
+    
+    # Required for some Linux distributions to link correctly
+    ENV["PKG_CONFIG_PATH"] = "#{Formula["openssl@3"].opt_lib}/pkgconfig:#{Formula["libffi"].opt_lib}/pkgconfig"
+
+    # 3. Install dependencies
+    # We don't use --only-binary so it stays flexible for WSL/Linux
     venv.pip_install "requests"
     venv.pip_install "cryptography"
 
-    # Install the actual package from the downloaded source
+    # 4. Install the actual package
     venv.pip_install buildpath
 
-    # Create the symlink for the beta command
-    # This links the internal 'gpr-hub' binary to the public 'gpr-hub-beta' name
+    # 5. Symlink the command
+    # Uses '=>' to rename the binary to gpr-hub-beta universally
     bin.install_symlink libexec/"bin/gpr-hub" => "gpr-hub-beta"
   end
 
